@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { Upload, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveImage } from "@/lib/format";
 import {
   Dialog,
   DialogContent,
