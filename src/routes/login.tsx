@@ -42,7 +42,7 @@ function LoginPage() {
       {/* Brand panel */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-foreground p-12 text-background lg:flex">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-accent">Lingerie Pro</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-accent">Secret's WOMEN FASHION</p>
         </div>
         <div className="space-y-6">
           <h1 className="font-display text-5xl leading-tight">
@@ -56,7 +56,7 @@ function LoginPage() {
           </p>
         </div>
         <p className="text-xs text-background/40">
-          © {new Date().getFullYear()} Lingerie Pro
+          © {new Date().getFullYear()} Secret's WOMEN FASHION
         </p>
       </div>
 
@@ -64,7 +64,7 @@ function LoginPage() {
       <div className="flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="mb-8 lg:hidden">
-            <p className="text-xs uppercase tracking-[0.35em] text-accent">Lingerie Pro</p>
+            <p className="text-xs uppercase tracking-[0.35em] text-accent">Secret's WOMEN FASHION</p>
             <h1 className="mt-2 font-display text-3xl">L'élégance, orchestrée.</h1>
           </div>
           <Tabs value={mode} onValueChange={(v) => setMode(v as "signin" | "signup")}>
