@@ -48,7 +48,7 @@ function AuthenticatedLayout() {
       {/* Sidebar */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card lg:flex">
         <div className="border-b border-border px-6 py-6">
-          <p className="text-[10px] uppercase tracking-[0.35em] text-accent">Lingerie</p>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-accent">Secret's</p>
           <p className="font-display text-2xl">Pro</p>
         </div>
         <nav className="flex-1 space-y-1 p-4">
@@ -94,7 +94,7 @@ function AuthenticatedLayout() {
       {/* Mobile top bar */}
       <div className="flex w-full flex-col">
         <header className="flex items-center justify-between border-b border-border bg-card px-4 py-3 lg:hidden">
-          <p className="font-display text-xl">Lingerie Pro</p>
+          <p className="font-display text-xl">Secret's WOMEN FASHION</p>
           <button
             onClick={async () => {
               await signOut();

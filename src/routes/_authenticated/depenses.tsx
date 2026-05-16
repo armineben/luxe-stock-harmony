@@ -99,7 +99,7 @@ function DepensesPage() {
           />
         </div>
         <div>
-          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Montant (€)</Label>
+          <Label className="text-xs uppercase tracking-wider text-muted-foreground">Montant (TND)</Label>
           <Input
             type="number"
             min={0}

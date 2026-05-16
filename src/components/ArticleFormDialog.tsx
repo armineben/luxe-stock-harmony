@@ -114,10 +114,10 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
             </Field>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Prix d'achat (€)">
+            <Field label="Prix d'achat (TND)">
               <Input type="number" min={0} step="0.01" value={form.prix_achat} onChange={(e) => set("prix_achat", e.target.value)} />
             </Field>
-            <Field label="Prix de vente (€) *">
+            <Field label="Prix de vente (TND) *">
               <Input type="number" min={0} step="0.01" value={form.prix_vente} onChange={(e) => set("prix_vente", e.target.value)} required />
             </Field>
           </div>

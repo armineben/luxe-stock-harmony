@@ -116,7 +116,7 @@ export function ProductDrawer({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs">Prix unitaire (€)</Label>
+                    <Label className="text-xs">Prix unitaire (TND)</Label>
                     <Input
                       type="number"
                       min={0}
