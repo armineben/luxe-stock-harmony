@@ -157,7 +157,7 @@ function DashboardPage() {
                     borderRadius: 8,
                     fontSize: 12,
                   }}
-                  formatter={(v: number) => formatCurrency(v)}
+                  formatter={(v: any) => formatCurrency(Number(v))}
                 />
                 <Line
                   type="monotone"
@@ -186,7 +186,7 @@ function DashboardPage() {
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                  <Tooltip formatter={(v: any) => formatCurrency(Number(v))} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
