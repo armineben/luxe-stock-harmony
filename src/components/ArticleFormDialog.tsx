@@ -155,8 +155,60 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
           <Field label="Emplacement">
             <Input value={form.emplacement} onChange={(e) => set("emplacement", e.target.value)} placeholder="Ex. Rayon A1" />
           </Field>
-          <Field label="Image (URL ou nom de fichier ex. '1.jpg' depuis public/images)">
-            <Input value={form.image} onChange={(e) => set("image", e.target.value)} placeholder="1.jpg ou https://..." />
+          <Field label="Photo de l'article">
+            <div className="space-y-3">
+              {form.image && (
+                <div className="relative inline-block">
+                  <img
+                    src={resolveImage(form.image) ?? ""}
+                    alt="Aperçu"
+                    className="h-32 w-32 rounded-lg border border-border object-cover"
+                    onError={(e) => ((e.currentTarget.style.display = "none"))}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => set("image", "")}
+                    className="absolute -right-2 -top-2 rounded-full bg-foreground p-1 text-background shadow-md hover:bg-destructive"
+                    aria-label="Retirer l'image"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleFileUpload(f);
+                    e.target.value = "";
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="gap-2"
+                >
+                  {uploading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="h-4 w-4" />
+                  )}
+                  {uploading ? "Envoi…" : "Choisir depuis ma galerie"}
+                </Button>
+                <Input
+                  value={form.image}
+                  onChange={(e) => set("image", e.target.value)}
+                  placeholder="…ou URL / nom de fichier"
+                  className="flex-1"
+                />
+              </div>
+            </div>
           </Field>
           <Field label="Notes">
             <Textarea rows={2} value={form.notes} onChange={(e) => set("notes", e.target.value)} />
