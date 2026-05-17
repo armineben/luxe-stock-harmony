@@ -34,6 +34,13 @@ function AuthenticatedLayout() {
     if (!loading && !user) navigate({ to: "/login" });
   }, [loading, user, navigate]);
 
+  // Restreindre les vendeurs au catalogue uniquement
+  useEffect(() => {
+    if (!loading && user && role && !isAdmin && pathname !== "/catalogue") {
+      navigate({ to: "/catalogue" });
+    }
+  }, [loading, user, role, isAdmin, pathname, navigate]);
+
   if (loading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
