@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import {
   LayoutDashboard,
@@ -8,20 +8,21 @@ import {
   ShoppingBag,
   Receipt,
   LogOut,
+  Users,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
 });
 
 const navItems = [
-  { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, adminOnly: false },
+  { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, adminOnly: true },
   { to: "/catalogue", label: "Catalogue", icon: Sparkles, adminOnly: false },
   { to: "/stock", label: "Stock", icon: Package, adminOnly: true },
-  { to: "/ventes", label: "Ventes", icon: ShoppingBag, adminOnly: false },
+  { to: "/ventes", label: "Ventes", icon: ShoppingBag, adminOnly: true },
   { to: "/depenses", label: "Dépenses", icon: Receipt, adminOnly: true },
+  { to: "/utilisateurs", label: "Utilisateurs", icon: Users, adminOnly: true },
 ] as const;
 
 function AuthenticatedLayout() {
