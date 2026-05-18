@@ -10,6 +10,7 @@ import {
   LogOut,
   Users,
   Bell,
+  FileBarChart,
   User as UserIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
@@ -24,6 +25,7 @@ const navItems = [
   { to: "/stock", label: "Stock", icon: Package, adminOnly: true },
   { to: "/ventes", label: "Ventes", icon: ShoppingBag, adminOnly: true },
   { to: "/depenses", label: "Dépenses", icon: Receipt, adminOnly: true },
+  { to: "/rapports", label: "Rapports", icon: FileBarChart, adminOnly: true },
   { to: "/utilisateurs", label: "Utilisateurs", icon: Users, adminOnly: true },
 ] as const;
 
