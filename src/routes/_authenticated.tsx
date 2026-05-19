@@ -14,6 +14,7 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
@@ -30,15 +31,7 @@ const navItems = [
 ] as const;
 
 function Avatar({ size = "md" }: { size?: "sm" | "md" }) {
-  const dim = size === "sm" ? "h-9 w-9" : "h-10 w-10";
-  return (
-    <div
-      className={`${dim} flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-soft text-accent ring-2 ring-accent/20`}
-      aria-label="Avatar"
-    >
-      <UserIcon className="h-5 w-5" />
-    </div>
-  );
+  return <Logo size={size === "sm" ? 36 : 44} />;
 }
 
 function AuthenticatedLayout() {
