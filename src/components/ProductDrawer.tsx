@@ -63,6 +63,16 @@ export function ProductDrawer({
             <SheetHeader>
               <SheetTitle className="font-display text-2xl">{article.designation}</SheetTitle>
             </SheetHeader>
+            {isAdmin && onDuplicate && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onDuplicate(article)}
+                className="mt-3 gap-2"
+              >
+                <Copy className="h-4 w-4" /> Dupliquer cet article
+              </Button>
+            )}
             <div className="mt-6 space-y-6">
               <div className="aspect-[3/4] overflow-hidden rounded-2xl bg-secondary">
                 {img ? (
