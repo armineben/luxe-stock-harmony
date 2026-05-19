@@ -11,7 +11,6 @@ import {
   Users,
   Bell,
   FileBarChart,
-  User as UserIcon,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Logo } from "@/components/Logo";
