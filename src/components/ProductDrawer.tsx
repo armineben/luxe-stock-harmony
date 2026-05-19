@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ShoppingBag, X } from "lucide-react";
+import { Copy, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatCurrency, resolveImage } from "@/lib/format";
@@ -13,9 +13,11 @@ import { Label } from "@/components/ui/label";
 export function ProductDrawer({
   article,
   onClose,
+  onDuplicate,
 }: {
   article: any | null;
   onClose: () => void;
+  onDuplicate?: (article: any) => void;
 }) {
   const { user, isAdmin } = useAuth();
   const qc = useQueryClient();
