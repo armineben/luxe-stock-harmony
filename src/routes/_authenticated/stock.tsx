@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Search, Download } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Download, Copy } from "lucide-react";
 import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -235,10 +235,27 @@ function StockPage() {
                         <div className="flex justify-end gap-1">
                           <button
                             onClick={() => {
+                              const { id, created_at, updated_at, ...rest } = a;
+                              setEditing({
+                                ...rest,
+                                designation: `${a.designation} (Copie)`,
+                                reference: `${a.reference}-COPIE`,
+                                quantite: 0,
+                              });
+                              setOpen(true);
+                            }}
+                            className="rounded-md p-2 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                            title="Dupliquer"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => {
                               setEditing(a);
                               setOpen(true);
                             }}
                             className="rounded-md p-2 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                            title="Modifier"
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
@@ -247,6 +264,7 @@ function StockPage() {
                               if (confirm(`Supprimer "${a.designation}" ?`)) del.mutate(a.id);
                             }}
                             className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            title="Supprimer"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
