@@ -1,9 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Upload, X, Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveImage } from "@/lib/format";
+import { presetFor } from "@/lib/category-presets";
+import { analyzeProductImage } from "@/lib/vision.functions";
 import {
   Dialog,
   DialogContent,
@@ -39,12 +42,30 @@ const empty = {
 export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
   const [form, setForm] = useState<any>(empty);
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const qc = useQueryClient();
+  const analyze = useServerFn(analyzeProductImage);
+
+  const isEdit = !!article?.id;
 
   useEffect(() => {
     setForm(article ? { ...empty, ...article } : empty);
   }, [article, open]);
+
+  const preset = presetFor(form.categorie);
+
+  // Auto-prefill taille/couleur defaults on new product when category changes
+  useEffect(() => {
+    if (isEdit) return;
+    if (!preset) return;
+    setForm((f: any) => ({
+      ...f,
+      taille: f.taille || preset.tailles[0] || "",
+      couleur: f.couleur || preset.couleurs[0] || "",
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.categorie]);
 
   async function handleFileUpload(file: File) {
     if (!file.type.startsWith("image/")) {
@@ -73,6 +94,31 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
     }
   }
 
+  async function handleAutoDetect() {
+    const url = resolveImage(form.image);
+    if (!url || !/^https?:/.test(url)) {
+      toast.error("Ajoutez d'abord une photo (uploadée)");
+      return;
+    }
+    setAnalyzing(true);
+    try {
+      const r: any = await analyze({ data: { imageUrl: url } });
+      setForm((f: any) => ({
+        ...f,
+        designation: f.designation || r.name || "",
+        categorie: f.categorie || r.category || "",
+        couleur: f.couleur || (Array.isArray(r.colors) ? r.colors[0] : "") || "",
+        prix_vente: Number(f.prix_vente) > 0 ? f.prix_vente : Number(r.suggestedPrice) || 0,
+        notes: f.notes || r.description || "",
+      }));
+      toast.success("Détection IA terminée — vérifiez et ajustez");
+    } catch (e: any) {
+      toast.error(e.message || "Échec de la détection");
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   const save = useMutation({
     mutationFn: async () => {
       const payload = {
@@ -88,7 +134,7 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
         image: form.image || null,
         notes: form.notes || null,
       };
-      if (article?.id) {
+      if (isEdit) {
         const { error } = await supabase.from("articles").update(payload).eq("id", article.id);
         if (error) throw error;
       } else {
@@ -97,7 +143,7 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
       }
     },
     onSuccess: () => {
-      toast.success(article ? "Article modifié" : "Article ajouté");
+      toast.success(isEdit ? "Article modifié" : "Article ajouté");
       qc.invalidateQueries({ queryKey: ["articles"] });
       onOpenChange(false);
     },
@@ -118,7 +164,7 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">
-            {article ? "Modifier l'article" : "Nouvel article"}
+            {isEdit ? "Modifier l'article" : "Nouvel article"}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
@@ -127,7 +173,18 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
               <Input value={form.reference} onChange={(e) => set("reference", e.target.value)} required />
             </Field>
             <Field label="Catégorie">
-              <Input value={form.categorie} onChange={(e) => set("categorie", e.target.value)} placeholder="Ex. Soutiens-gorge" />
+              <Input
+                value={form.categorie}
+                onChange={(e) => set("categorie", e.target.value)}
+                placeholder="Lingerie, Pyjama, Robe, Soutien-gorge…"
+                list="categorie-suggestions"
+              />
+              <datalist id="categorie-suggestions">
+                <option value="Lingerie" />
+                <option value="Pyjama" />
+                <option value="Robe" />
+                <option value="Soutien-gorge" />
+              </datalist>
             </Field>
           </div>
           <Field label="Désignation *">
@@ -136,9 +193,27 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
           <div className="grid gap-4 sm:grid-cols-3">
             <Field label="Taille">
               <Input value={form.taille} onChange={(e) => set("taille", e.target.value)} />
+              {preset && (
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {preset.tailles.map((t) => (
+                    <Chip key={t} active={form.taille === t} onClick={() => set("taille", t)}>
+                      {t}
+                    </Chip>
+                  ))}
+                </div>
+              )}
             </Field>
             <Field label="Couleur">
               <Input value={form.couleur} onChange={(e) => set("couleur", e.target.value)} />
+              {preset && (
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {preset.couleurs.map((c) => (
+                    <Chip key={c} active={form.couleur === c} onClick={() => set("couleur", c)}>
+                      {c}
+                    </Chip>
+                  ))}
+                </div>
+              )}
             </Field>
             <Field label="Quantité">
               <Input type="number" min={0} value={form.quantite} onChange={(e) => set("quantite", e.target.value)} />
@@ -208,6 +283,20 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
                   className="flex-1"
                 />
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAutoDetect}
+                disabled={analyzing || !form.image}
+                className="gap-2"
+              >
+                {analyzing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4 text-accent" />
+                )}
+                {analyzing ? "Analyse IA en cours…" : "Détection auto depuis la photo"}
+              </Button>
             </div>
           </Field>
           <Field label="Notes">
@@ -219,7 +308,7 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
               Annuler
             </Button>
             <Button type="submit" disabled={save.isPending} className="bg-accent text-accent-foreground hover:bg-accent-hover">
-              {save.isPending ? "…" : article ? "Enregistrer" : "Ajouter"}
+              {save.isPending ? "…" : isEdit ? "Enregistrer" : "Ajouter"}
             </Button>
           </DialogFooter>
         </form>
@@ -234,5 +323,29 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <Label className="text-xs uppercase tracking-wider text-muted-foreground">{label}</Label>
       {children}
     </div>
+  );
+}
+
+function Chip({
+  children,
+  active,
+  onClick,
+}: {
+  children: React.ReactNode;
+  active?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-full border px-2.5 py-0.5 text-[11px] transition-colors ${
+        active
+          ? "border-accent bg-accent text-accent-foreground"
+          : "border-border bg-background text-muted-foreground hover:border-accent hover:text-foreground"
+      }`}
+    >
+      {children}
+    </button>
   );
 }

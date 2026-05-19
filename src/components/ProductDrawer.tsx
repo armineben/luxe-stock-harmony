@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ShoppingBag, X } from "lucide-react";
+import { Copy, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatCurrency, resolveImage } from "@/lib/format";
@@ -13,9 +13,11 @@ import { Label } from "@/components/ui/label";
 export function ProductDrawer({
   article,
   onClose,
+  onDuplicate,
 }: {
   article: any | null;
   onClose: () => void;
+  onDuplicate?: (article: any) => void;
 }) {
   const { user, isAdmin } = useAuth();
   const qc = useQueryClient();
@@ -61,6 +63,16 @@ export function ProductDrawer({
             <SheetHeader>
               <SheetTitle className="font-display text-2xl">{article.designation}</SheetTitle>
             </SheetHeader>
+            {isAdmin && onDuplicate && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onDuplicate(article)}
+                className="mt-3 gap-2"
+              >
+                <Copy className="h-4 w-4" /> Dupliquer cet article
+              </Button>
+            )}
             <div className="mt-6 space-y-6">
               <div className="aspect-[3/4] overflow-hidden rounded-2xl bg-secondary">
                 {img ? (
