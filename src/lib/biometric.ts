@@ -103,11 +103,12 @@ export async function verifyBiometric(): Promise<{ email: string; password: stri
   if (!biometricAvailable()) throw new Error("Biométrie non supportée.");
 
   const challenge = crypto.getRandomValues(new Uint8Array(32));
-  const allow = [
+  const idBytes = b64decode(stored.credentialId);
+  const allow: PublicKeyCredentialDescriptor[] = [
     {
-      type: "public-key" as const,
-      id: b64decode(stored.credentialId),
-      transports: ["internal" as AuthenticatorTransport],
+      type: "public-key",
+      id: idBytes.buffer.slice(idBytes.byteOffset, idBytes.byteOffset + idBytes.byteLength) as ArrayBuffer,
+      transports: ["internal"],
     },
   ];
 
