@@ -11,6 +11,7 @@ import {
   Users,
   Bell,
   FileBarChart,
+  UserCog,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Logo } from "@/components/Logo";
@@ -27,6 +28,7 @@ const navItems = [
   { to: "/depenses", label: "Dépenses", icon: Receipt, adminOnly: true },
   { to: "/rapports", label: "Rapports", icon: FileBarChart, adminOnly: true },
   { to: "/utilisateurs", label: "Utilisateurs", icon: Users, adminOnly: true },
+  { to: "/profil", label: "Mon profil", icon: UserCog, adminOnly: false },
 ] as const;
 
 function Avatar({ size = "md" }: { size?: "sm" | "md" }) {
@@ -43,7 +45,8 @@ function AuthenticatedLayout() {
   }, [loading, user, navigate]);
 
   useEffect(() => {
-    if (!loading && user && role && !isAdmin && pathname !== "/catalogue") {
+    const allowedForNonAdmin = ["/catalogue", "/profil"];
+    if (!loading && user && role && !isAdmin && !allowedForNonAdmin.some((p) => pathname.startsWith(p))) {
       navigate({ to: "/catalogue" });
     }
   }, [loading, user, role, isAdmin, pathname, navigate]);
