@@ -11,7 +11,25 @@ import {
   Users,
   Bell,
   FileBarChart,
+  UserCog,
 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { Logo } from "@/components/Logo";
+
+export const Route = createFileRoute("/_authenticated")({
+  component: AuthenticatedLayout,
+});
+
+const navItems = [
+  { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, adminOnly: true },
+  { to: "/catalogue", label: "Catalogue", icon: Sparkles, adminOnly: false },
+  { to: "/stock", label: "Stock", icon: Package, adminOnly: true },
+  { to: "/ventes", label: "Ventes", icon: ShoppingBag, adminOnly: true },
+  { to: "/depenses", label: "Dépenses", icon: Receipt, adminOnly: true },
+  { to: "/rapports", label: "Rapports", icon: FileBarChart, adminOnly: true },
+  { to: "/utilisateurs", label: "Utilisateurs", icon: Users, adminOnly: true },
+  { to: "/profil", label: "Mon profil", icon: UserCog, adminOnly: false },
+] as const;
 import { useAuth } from "@/hooks/use-auth";
 import { Logo } from "@/components/Logo";
 
