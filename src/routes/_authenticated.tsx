@@ -45,7 +45,8 @@ function AuthenticatedLayout() {
   }, [loading, user, navigate]);
 
   useEffect(() => {
-    if (!loading && user && role && !isAdmin && pathname !== "/catalogue") {
+    const allowedForNonAdmin = ["/catalogue", "/profil"];
+    if (!loading && user && role && !isAdmin && !allowedForNonAdmin.some((p) => pathname.startsWith(p))) {
       navigate({ to: "/catalogue" });
     }
   }, [loading, user, role, isAdmin, pathname, navigate]);
