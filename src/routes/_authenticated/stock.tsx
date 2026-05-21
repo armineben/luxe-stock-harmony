@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Search, Download, Copy } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Download, Copy, Upload } from "lucide-react";
+import { ImportArticlesDialog } from "@/components/ImportArticlesDialog";
 import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -30,6 +31,7 @@ function StockPage() {
   const [sort, setSort] = useState<"reference" | "quantite" | "designation">("reference");
   const [editing, setEditing] = useState<any | null>(null);
   const [open, setOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const { data: articles = [] } = useQuery({
     queryKey: ["articles"],
@@ -113,15 +115,20 @@ function StockPage() {
             <Download className="mr-2 h-4 w-4" /> Exporter
           </Button>
           {isAdmin && (
-            <Button
-              onClick={() => {
-                setEditing(null);
-                setOpen(true);
-              }}
-              className="bg-accent text-accent-foreground hover:bg-accent-hover"
-            >
-              <Plus className="mr-2 h-4 w-4" /> Ajouter
-            </Button>
+            <>
+              <Button variant="outline" onClick={() => setImportOpen(true)}>
+                <Upload className="mr-2 h-4 w-4" /> Importer depuis Excel
+              </Button>
+              <Button
+                onClick={() => {
+                  setEditing(null);
+                  setOpen(true);
+                }}
+                className="bg-accent text-accent-foreground hover:bg-accent-hover"
+              >
+                <Plus className="mr-2 h-4 w-4" /> Ajouter
+              </Button>
+            </>
           )}
         </div>
       </header>
@@ -287,6 +294,7 @@ function StockPage() {
       </div>
 
       <ArticleFormDialog open={open} onOpenChange={setOpen} article={editing} />
+      <ImportArticlesDialog open={importOpen} onOpenChange={setImportOpen} />
     </div>
   );
 }
