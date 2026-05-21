@@ -326,13 +326,35 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
             <Textarea rows={2} value={form.notes} onChange={(e) => set("notes", e.target.value)} />
           </Field>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Annuler
-            </Button>
-            <Button type="submit" disabled={save.isPending} className="bg-accent text-accent-foreground hover:bg-accent-hover">
-              {save.isPending ? "…" : isEdit ? "Enregistrer" : "Ajouter"}
-            </Button>
+          <DialogFooter className="gap-2 sm:justify-between">
+            {isEdit ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  if (
+                    confirm(
+                      `Archiver "${form.designation}" ? Il sera masqué du catalogue et du stock, mais l'historique des ventes sera préservé.`,
+                    )
+                  )
+                    archive.mutate();
+                }}
+                disabled={archive.isPending}
+                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                {archive.isPending ? "…" : "Archiver l'article"}
+              </Button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={save.isPending} className="bg-accent text-accent-foreground hover:bg-accent-hover">
+                {save.isPending ? "…" : isEdit ? "Enregistrer" : "Ajouter"}
+              </Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
