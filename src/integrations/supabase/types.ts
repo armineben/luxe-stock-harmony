@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       articles: {
         Row: {
+          archived: boolean
           categorie: string | null
           couleur: string | null
           created_at: string
@@ -32,6 +33,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived?: boolean
           categorie?: string | null
           couleur?: string | null
           created_at?: string
@@ -48,6 +50,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived?: boolean
           categorie?: string | null
           couleur?: string | null
           created_at?: string
