@@ -36,7 +36,10 @@ function StockPage() {
   const { data: articles = [] } = useQuery({
     queryKey: ["articles"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("articles").select("*");
+      const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("archived", false);
       if (error) throw error;
       return data ?? [];
     },
@@ -64,13 +67,13 @@ function StockPage() {
     return r;
   }, [articles, search, cat, sort]);
 
-  const del = useMutation({
+  const archive = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("articles").delete().eq("id", id);
+      const { error } = await supabase.from("articles").update({ archived: true }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Article supprimé");
+      toast.success("Article archivé");
       qc.invalidateQueries({ queryKey: ["articles"] });
     },
     onError: (e: any) => toast.error(e.message),
