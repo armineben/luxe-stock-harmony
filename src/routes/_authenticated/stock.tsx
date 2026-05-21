@@ -271,10 +271,11 @@ function StockPage() {
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm(`Supprimer "${a.designation}" ?`)) del.mutate(a.id);
+                              if (confirm(`Archiver "${a.designation}" ? Il ne sera plus visible dans le catalogue.`))
+                                archive.mutate(a.id);
                             }}
                             className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                            title="Supprimer"
+                            title="Archiver"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
