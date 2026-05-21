@@ -188,8 +188,12 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Référence *">
-              <Input value={form.reference} onChange={(e) => set("reference", e.target.value)} required />
+            <Field label="Référence">
+              <Input
+                value={form.reference}
+                onChange={(e) => set("reference", e.target.value)}
+                placeholder="Auto-générée si vide"
+              />
             </Field>
             <Field label="Catégorie">
               <Input
