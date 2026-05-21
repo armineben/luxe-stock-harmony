@@ -121,8 +121,11 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
 
   const save = useMutation({
     mutationFn: async () => {
+      const autoRef =
+        form.reference?.trim() ||
+        `REF-AUTO-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 9000 + 1000)}`;
       const payload = {
-        reference: form.reference,
+        reference: autoRef,
         designation: form.designation,
         taille: form.taille || null,
         couleur: form.couleur || null,
@@ -150,6 +153,22 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const archive = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("articles")
+        .update({ archived: true })
+        .eq("id", article.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Article archivé");
+      qc.invalidateQueries({ queryKey: ["articles"] });
+      onOpenChange(false);
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   function submit(e: FormEvent) {
     e.preventDefault();
     save.mutate();
@@ -169,8 +188,12 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
         </DialogHeader>
         <form onSubmit={submit} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Référence *">
-              <Input value={form.reference} onChange={(e) => set("reference", e.target.value)} required />
+            <Field label="Référence">
+              <Input
+                value={form.reference}
+                onChange={(e) => set("reference", e.target.value)}
+                placeholder="Auto-générée si vide"
+              />
             </Field>
             <Field label="Catégorie">
               <Input
@@ -303,13 +326,35 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
             <Textarea rows={2} value={form.notes} onChange={(e) => set("notes", e.target.value)} />
           </Field>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Annuler
-            </Button>
-            <Button type="submit" disabled={save.isPending} className="bg-accent text-accent-foreground hover:bg-accent-hover">
-              {save.isPending ? "…" : isEdit ? "Enregistrer" : "Ajouter"}
-            </Button>
+          <DialogFooter className="gap-2 sm:justify-between">
+            {isEdit ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  if (
+                    confirm(
+                      `Archiver "${form.designation}" ? Il sera masqué du catalogue et du stock, mais l'historique des ventes sera préservé.`,
+                    )
+                  )
+                    archive.mutate();
+                }}
+                disabled={archive.isPending}
+                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                {archive.isPending ? "…" : "Archiver l'article"}
+              </Button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={save.isPending} className="bg-accent text-accent-foreground hover:bg-accent-hover">
+                {save.isPending ? "…" : isEdit ? "Enregistrer" : "Ajouter"}
+              </Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
