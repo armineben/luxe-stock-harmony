@@ -121,8 +121,11 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
 
   const save = useMutation({
     mutationFn: async () => {
+      const autoRef =
+        form.reference?.trim() ||
+        `REF-AUTO-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 9000 + 1000)}`;
       const payload = {
-        reference: form.reference,
+        reference: autoRef,
         designation: form.designation,
         taille: form.taille || null,
         couleur: form.couleur || null,
@@ -144,6 +147,22 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
     },
     onSuccess: () => {
       toast.success(isEdit ? "Article modifié" : "Article ajouté");
+      qc.invalidateQueries({ queryKey: ["articles"] });
+      onOpenChange(false);
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const archive = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("articles")
+        .update({ archived: true })
+        .eq("id", article.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Article archivé");
       qc.invalidateQueries({ queryKey: ["articles"] });
       onOpenChange(false);
     },
