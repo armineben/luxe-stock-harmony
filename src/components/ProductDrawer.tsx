@@ -1,5 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Copy, ShoppingBag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function ProductDrawer({
   article,
@@ -23,13 +30,33 @@ export function ProductDrawer({
   const qc = useQueryClient();
   const [qty, setQty] = useState(1);
   const [price, setPrice] = useState<number | "">("");
+  const [vendeurId, setVendeurId] = useState<string>("");
+
+  const { data: vendeurs = [] } = useQuery({
+    queryKey: ["vendeurs-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, display_name, email")
+        .order("display_name");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  useEffect(() => {
+    if (!vendeurId && user) setVendeurId(user.id);
+  }, [user, vendeurId]);
 
   const sell = useMutation({
     mutationFn: async () => {
       if (!article) return;
+      if (!vendeurId) throw new Error("Sélectionnez le vendeur");
       const unit = Number(price || article.prix_vente);
       const total = unit * qty;
       const benefice = (unit - Number(article.prix_achat)) * qty;
+      const v = vendeurs.find((x: any) => x.id === vendeurId);
+      const vendeur_nom = v?.display_name || v?.email || "Inconnu";
       const { error } = await supabase.from("sales").insert({
         article_id: article.id,
         quantite: qty,
@@ -37,7 +64,8 @@ export function ProductDrawer({
         prix_achat_unitaire: Number(article.prix_achat),
         total,
         benefice,
-        vendeur_id: user?.id,
+        vendeur_id: vendeurId,
+        vendeur_nom,
       });
       if (error) throw error;
     },
@@ -141,9 +169,24 @@ export function ProductDrawer({
                     />
                   </div>
                 </div>
+                <div>
+                  <Label className="text-xs">Vendeur *</Label>
+                  <Select value={vendeurId} onValueChange={setVendeurId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir le vendeur" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {vendeurs.map((v: any) => (
+                        <SelectItem key={v.id} value={v.id}>
+                          {v.display_name || v.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Button
                   onClick={() => sell.mutate()}
-                  disabled={sell.isPending || article.quantite === 0}
+                  disabled={sell.isPending || article.quantite === 0 || !vendeurId}
                   className="w-full bg-accent text-accent-foreground hover:bg-accent-hover"
                 >
                   <ShoppingBag className="mr-2 h-4 w-4" />

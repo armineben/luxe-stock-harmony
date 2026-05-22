@@ -20,6 +20,7 @@ import {
   ShoppingBag,
   Receipt,
   AlertTriangle,
+  Users,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -95,6 +96,19 @@ function DashboardPage() {
     catMap.set(c, (catMap.get(c) ?? 0) + Number(s.total));
   });
   const pieData = Array.from(catMap.entries()).map(([name, value]) => ({ name, value }));
+
+  // By seller
+  const vendMap = new Map<string, { pieces: number; ca: number }>();
+  sales.forEach((s: any) => {
+    const name = s.vendeur_nom || "Non renseigné";
+    const cur = vendMap.get(name) ?? { pieces: 0, ca: 0 };
+    cur.pieces += Number(s.quantite);
+    cur.ca += Number(s.total);
+    vendMap.set(name, cur);
+  });
+  const teamPerf = Array.from(vendMap.entries())
+    .map(([name, v]) => ({ name, ...v }))
+    .sort((a, b) => b.ca - a.ca);
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 p-6 lg:p-10">
