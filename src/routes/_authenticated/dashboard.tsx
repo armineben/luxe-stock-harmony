@@ -235,6 +235,38 @@ function DashboardPage() {
           </div>
         )}
       </section>
+
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <Users className="h-4 w-4 text-accent" />
+          <h3 className="font-display text-xl">Performance de l'équipe</h3>
+        </div>
+        {teamPerf.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Aucune vente enregistrée pour le moment.</p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {teamPerf.map((v) => (
+              <div
+                key={v.name}
+                className="rounded-xl border border-border bg-secondary/30 p-4"
+              >
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Vendeur</p>
+                <p className="mt-1 font-display text-lg">{v.name}</p>
+                <div className="mt-3 flex items-end justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Pièces</p>
+                    <p className="font-display text-xl">{v.pieces}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground">Chiffre d'affaires</p>
+                    <p className="font-display text-xl text-accent">{formatCurrency(v.ca)}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
