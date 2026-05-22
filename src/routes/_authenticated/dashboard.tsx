@@ -49,7 +49,7 @@ function DashboardPage() {
   const { data: articles = [] } = useQuery({
     queryKey: ["articles"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("articles").select("*").eq("archived", false);
+      const { data, error } = await supabase.from("articles").select("*").eq("status", "actif");
       if (error) throw error;
       return data ?? [];
     },

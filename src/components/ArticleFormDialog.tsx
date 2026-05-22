@@ -153,17 +153,18 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const archive = useMutation({
-    mutationFn: async () => {
+  const setStatus = useMutation({
+    mutationFn: async (status: "archive" | "supprime") => {
       const { error } = await supabase
         .from("articles")
-        .update({ archived: true })
+        .update({ status, archived: true })
         .eq("id", article.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success("Article archivé");
+    onSuccess: (_d, status) => {
+      toast.success(status === "archive" ? "Article archivé" : "Déplacé dans la corbeille");
       qc.invalidateQueries({ queryKey: ["articles"] });
+      qc.invalidateQueries({ queryKey: ["articles-by-status"] });
       onOpenChange(false);
     },
     onError: (e: any) => toast.error(e.message),
@@ -328,22 +329,30 @@ export function ArticleFormDialog({ open, onOpenChange, article }: Props) {
 
           <DialogFooter className="gap-2 sm:justify-between">
             {isEdit ? (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  if (
-                    confirm(
-                      `Archiver "${form.designation}" ? Il sera masqué du catalogue et du stock, mais l'historique des ventes sera préservé.`,
-                    )
-                  )
-                    archive.mutate();
-                }}
-                disabled={archive.isPending}
-                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-              >
-                {archive.isPending ? "…" : "Archiver l'article"}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (confirm(`Archiver "${form.designation}" ?`)) setStatus.mutate("archive");
+                  }}
+                  disabled={setStatus.isPending}
+                >
+                  Archiver
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (confirm(`Mettre "${form.designation}" à la corbeille ?`))
+                      setStatus.mutate("supprime");
+                  }}
+                  disabled={setStatus.isPending}
+                  className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                >
+                  Mettre à la corbeille
+                </Button>
+              </div>
             ) : (
               <span />
             )}

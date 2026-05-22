@@ -39,7 +39,7 @@ function StockPage() {
       const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .eq("archived", false);
+        .eq("status", "actif");
       if (error) throw error;
       return data ?? [];
     },
@@ -68,13 +68,17 @@ function StockPage() {
   }, [articles, search, cat, sort]);
 
   const archive = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("articles").update({ archived: true }).eq("id", id);
+    mutationFn: async ({ id, status }: { id: string; status: "archive" | "supprime" }) => {
+      const { error } = await supabase
+        .from("articles")
+        .update({ status, archived: true })
+        .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success("Article archivé");
+    onSuccess: (_d, v) => {
+      toast.success(v.status === "archive" ? "Article archivé" : "Déplacé dans la corbeille");
       qc.invalidateQueries({ queryKey: ["articles"] });
+      qc.invalidateQueries({ queryKey: ["articles-by-status"] });
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -271,11 +275,11 @@ function StockPage() {
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm(`Archiver "${a.designation}" ? Il ne sera plus visible dans le catalogue.`))
-                                archive.mutate(a.id);
+                              if (confirm(`Déplacer "${a.designation}" vers la corbeille ?`))
+                                archive.mutate({ id: a.id, status: "supprime" });
                             }}
                             className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                            title="Archiver"
+                            title="Mettre à la corbeille"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
