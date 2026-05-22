@@ -12,6 +12,7 @@ import {
   Bell,
   FileBarChart,
   UserCog,
+  FolderCog,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Logo } from "@/components/Logo";
@@ -24,6 +25,7 @@ const navItems = [
   { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard, adminOnly: true },
   { to: "/catalogue", label: "Catalogue", icon: Sparkles, adminOnly: false },
   { to: "/stock", label: "Stock", icon: Package, adminOnly: true },
+  { to: "/gestion-catalogue", label: "Gestion catalogue", icon: FolderCog, adminOnly: true },
   { to: "/ventes", label: "Ventes", icon: ShoppingBag, adminOnly: true },
   { to: "/depenses", label: "Dépenses", icon: Receipt, adminOnly: true },
   { to: "/rapports", label: "Rapports", icon: FileBarChart, adminOnly: true },

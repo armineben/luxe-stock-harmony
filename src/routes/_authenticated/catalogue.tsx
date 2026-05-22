@@ -46,7 +46,7 @@ function CataloguePage() {
       const { data, error } = await supabase
         .from("articles")
         .select("*")
-        .eq("archived", false)
+        .eq("status", "actif")
         .order("designation");
       if (error) throw error;
       return data ?? [];

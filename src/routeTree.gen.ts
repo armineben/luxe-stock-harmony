@@ -19,6 +19,7 @@ import { Route as AuthenticatedUtilisateursRouteImport } from './routes/_authent
 import { Route as AuthenticatedStockRouteImport } from './routes/_authenticated/stock'
 import { Route as AuthenticatedRapportsRouteImport } from './routes/_authenticated/rapports'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
+import { Route as AuthenticatedGestionCatalogueRouteImport } from './routes/_authenticated/gestion-catalogue'
 import { Route as AuthenticatedDepensesRouteImport } from './routes/_authenticated/depenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCatalogueRouteImport } from './routes/_authenticated/catalogue'
@@ -73,6 +74,12 @@ const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   path: '/profil',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedGestionCatalogueRoute =
+  AuthenticatedGestionCatalogueRouteImport.update({
+    id: '/gestion-catalogue',
+    path: '/gestion-catalogue',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDepensesRoute = AuthenticatedDepensesRouteImport.update({
   id: '/depenses',
   path: '/depenses',
@@ -97,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/catalogue': typeof AuthenticatedCatalogueRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/depenses': typeof AuthenticatedDepensesRoute
+  '/gestion-catalogue': typeof AuthenticatedGestionCatalogueRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/rapports': typeof AuthenticatedRapportsRoute
   '/stock': typeof AuthenticatedStockRoute
@@ -111,6 +119,7 @@ export interface FileRoutesByTo {
   '/catalogue': typeof AuthenticatedCatalogueRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/depenses': typeof AuthenticatedDepensesRoute
+  '/gestion-catalogue': typeof AuthenticatedGestionCatalogueRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/rapports': typeof AuthenticatedRapportsRoute
   '/stock': typeof AuthenticatedStockRoute
@@ -127,6 +136,7 @@ export interface FileRoutesById {
   '/_authenticated/catalogue': typeof AuthenticatedCatalogueRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/depenses': typeof AuthenticatedDepensesRoute
+  '/_authenticated/gestion-catalogue': typeof AuthenticatedGestionCatalogueRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/rapports': typeof AuthenticatedRapportsRoute
   '/_authenticated/stock': typeof AuthenticatedStockRoute
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/catalogue'
     | '/dashboard'
     | '/depenses'
+    | '/gestion-catalogue'
     | '/profil'
     | '/rapports'
     | '/stock'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/catalogue'
     | '/dashboard'
     | '/depenses'
+    | '/gestion-catalogue'
     | '/profil'
     | '/rapports'
     | '/stock'
@@ -172,6 +184,7 @@ export interface FileRouteTypes {
     | '/_authenticated/catalogue'
     | '/_authenticated/dashboard'
     | '/_authenticated/depenses'
+    | '/_authenticated/gestion-catalogue'
     | '/_authenticated/profil'
     | '/_authenticated/rapports'
     | '/_authenticated/stock'
@@ -259,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfilRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/gestion-catalogue': {
+      id: '/_authenticated/gestion-catalogue'
+      path: '/gestion-catalogue'
+      fullPath: '/gestion-catalogue'
+      preLoaderRoute: typeof AuthenticatedGestionCatalogueRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/depenses': {
       id: '/_authenticated/depenses'
       path: '/depenses'
@@ -287,6 +307,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCatalogueRoute: typeof AuthenticatedCatalogueRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDepensesRoute: typeof AuthenticatedDepensesRoute
+  AuthenticatedGestionCatalogueRoute: typeof AuthenticatedGestionCatalogueRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedRapportsRoute: typeof AuthenticatedRapportsRoute
   AuthenticatedStockRoute: typeof AuthenticatedStockRoute
@@ -298,6 +319,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCatalogueRoute: AuthenticatedCatalogueRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDepensesRoute: AuthenticatedDepensesRoute,
+  AuthenticatedGestionCatalogueRoute: AuthenticatedGestionCatalogueRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedRapportsRoute: AuthenticatedRapportsRoute,
   AuthenticatedStockRoute: AuthenticatedStockRoute,

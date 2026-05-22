@@ -20,6 +20,7 @@ import {
   ShoppingBag,
   Receipt,
   AlertTriangle,
+  Users,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -49,7 +50,7 @@ function DashboardPage() {
   const { data: articles = [] } = useQuery({
     queryKey: ["articles"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("articles").select("*").eq("archived", false);
+      const { data, error } = await supabase.from("articles").select("*").eq("status", "actif");
       if (error) throw error;
       return data ?? [];
     },
@@ -95,6 +96,19 @@ function DashboardPage() {
     catMap.set(c, (catMap.get(c) ?? 0) + Number(s.total));
   });
   const pieData = Array.from(catMap.entries()).map(([name, value]) => ({ name, value }));
+
+  // By seller
+  const vendMap = new Map<string, { pieces: number; ca: number }>();
+  sales.forEach((s: any) => {
+    const name = s.vendeur_nom || "Non renseigné";
+    const cur = vendMap.get(name) ?? { pieces: 0, ca: 0 };
+    cur.pieces += Number(s.quantite);
+    cur.ca += Number(s.total);
+    vendMap.set(name, cur);
+  });
+  const teamPerf = Array.from(vendMap.entries())
+    .map(([name, v]) => ({ name, ...v }))
+    .sort((a, b) => b.ca - a.ca);
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 p-6 lg:p-10">
@@ -216,6 +230,38 @@ function DashboardPage() {
                   </p>
                 </div>
                 <span className="text-lg font-display text-accent">{a.quantite}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="rounded-2xl border border-border bg-card p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <Users className="h-4 w-4 text-accent" />
+          <h3 className="font-display text-xl">Performance de l'équipe</h3>
+        </div>
+        {teamPerf.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Aucune vente enregistrée pour le moment.</p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {teamPerf.map((v) => (
+              <div
+                key={v.name}
+                className="rounded-xl border border-border bg-secondary/30 p-4"
+              >
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">Vendeur</p>
+                <p className="mt-1 font-display text-lg">{v.name}</p>
+                <div className="mt-3 flex items-end justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Pièces</p>
+                    <p className="font-display text-xl">{v.pieces}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground">Chiffre d'affaires</p>
+                    <p className="font-display text-xl text-accent">{formatCurrency(v.ca)}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>

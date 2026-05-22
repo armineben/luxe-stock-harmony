@@ -29,6 +29,7 @@ export type Database = {
           prix_vente: number
           quantite: number
           reference: string
+          status: string
           taille: string | null
           updated_at: string
         }
@@ -46,6 +47,7 @@ export type Database = {
           prix_vente?: number
           quantite?: number
           reference: string
+          status?: string
           taille?: string | null
           updated_at?: string
         }
@@ -63,6 +65,7 @@ export type Database = {
           prix_vente?: number
           quantite?: number
           reference?: string
+          status?: string
           taille?: string | null
           updated_at?: string
         }
@@ -127,6 +130,7 @@ export type Database = {
           quantite: number
           total: number
           vendeur_id: string | null
+          vendeur_nom: string | null
         }
         Insert: {
           article_id: string
@@ -138,6 +142,7 @@ export type Database = {
           quantite: number
           total: number
           vendeur_id?: string | null
+          vendeur_nom?: string | null
         }
         Update: {
           article_id?: string
@@ -149,6 +154,7 @@ export type Database = {
           quantite?: number
           total?: number
           vendeur_id?: string | null
+          vendeur_nom?: string | null
         }
         Relationships: [
           {
